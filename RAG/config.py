@@ -24,3 +24,18 @@ SUPPORTED_EXTENSIONS = {
 
 CHUNK_SIZE = 500
 CHUNK_OVERLAP = 100
+# ==========================
+# Embeddings Configuration
+# ==========================
+OLLAMA_BASE_URL = "http://localhost:11434"
+EMBEDDING_MODEL_NAME = "nomic-embed-text"
+# ==========================
+# Vector Store Configuration
+# ==========================
+# ==========================
+# Chroma Configuration
+# ==========================
+
+from pathlib import Path
+
+CHROMA_PERSIST_DIR = Path("RAG/vector_db/chroma")

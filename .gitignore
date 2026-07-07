@@ -44,3 +44,4 @@ Thumbs.db
 # ChromaDB (si base locale)
 # =========================
 chroma/
+storage/
