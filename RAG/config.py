@@ -27,9 +27,15 @@ CHUNK_OVERLAP = 100
 # ==========================
 # Embeddings Configuration
 # ==========================
-EMBEDDING_MODEL_NAME = "BAAI/bge-small-en-v1.5"
-
+OLLAMA_BASE_URL = "http://localhost:11434"
+EMBEDDING_MODEL_NAME = "nomic-embed-text"
 # ==========================
 # Vector Store Configuration
 # ==========================
-CHROMA_PERSIST_DIR = BASE_DIR / "storage" / "chroma_db"
+# ==========================
+# Chroma Configuration
+# ==========================
+
+from pathlib import Path
+
+CHROMA_PERSIST_DIR = Path("RAG/vector_db/chroma")

@@ -1,47 +1,54 @@
 """
 embedder.py
 -----------
-Module de génération des embeddings (tâche 2).
 
-Fournit le modèle d'embedding utilisé pour transformer :
-- les chunks de documents (à l'indexation)
-- les questions utilisateur (à la recherche)
+Création du modèle d'embedding via Ollama.
 
-Utilise le même modèle des deux côtés (obligatoire pour que la
-similarité vectorielle ait un sens), conformément au cahier des
-charges : BAAI/bge-small-en-v1.5 via sentence-transformers.
+Le modèle utilisé est :
+
+nomic-embed-text
+
+Les embeddings générés serviront à :
+
+- indexer les chunks
+- embedder les questions utilisateur
+
 """
 
 import logging
 
-from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_ollama import OllamaEmbeddings
 
-from RAG.config import EMBEDDING_MODEL_NAME
+from RAG.config import (
+    EMBEDDING_MODEL_NAME,
+    OLLAMA_BASE_URL,
+)
 
 logger = logging.getLogger(__name__)
 
 
-def get_embedding_function() -> HuggingFaceEmbeddings:
+def get_embedding_function() -> OllamaEmbeddings:
     """
-    Retourne une instance LangChain-compatible du modèle d'embedding.
-
-    Cette fonction est le point d'entrée unique utilisé par :
-    - vector_store.py (tâche 2) pour indexer les chunks
-    - retrieval/retriever.py (tâche 3) si besoin d'embedder une question
-
-    Returns:
-        HuggingFaceEmbeddings: objet embedding compatible avec Chroma,
-        Qdrant, FAISS, etc.
+    Retourne le modèle d'embedding Ollama.
     """
+
     try:
-        embedding_function = HuggingFaceEmbeddings(
-            model_name=EMBEDDING_MODEL_NAME,
-            model_kwargs={"device": "cpu"},  # pas de GPU disponible sur la machine
-            encode_kwargs={"normalize_embeddings": True},  # recommandé pour bge-*
+
+        embedding = OllamaEmbeddings(
+            model=EMBEDDING_MODEL_NAME,
+            base_url=OLLAMA_BASE_URL,
         )
-        logger.info(f"Modèle d'embedding chargé : {EMBEDDING_MODEL_NAME}")
-        return embedding_function
+
+        logger.info(
+            f"Embedding model chargé : {EMBEDDING_MODEL_NAME}"
+        )
+
+        return embedding
 
     except Exception as e:
-        logger.error(f"Erreur lors du chargement du modèle d'embedding : {e}")
-        raise RuntimeError(f"Impossible de charger le modèle d'embedding : {e}")
+
+        logger.exception(e)
+
+        raise RuntimeError(
+            f"Impossible de charger le modèle : {e}"
+        )
