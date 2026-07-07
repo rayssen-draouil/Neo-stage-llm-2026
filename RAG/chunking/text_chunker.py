@@ -1,24 +1,22 @@
-# RAG/chunking/text_chunker.py
-
 from langchain_text_splitters import RecursiveCharacterTextSplitter
+from RAG.config import CHUNK_SIZE, CHUNK_OVERLAP
 
-def chunk_documents(
-    documents,
-    chunk_size=800,
-    chunk_overlap=200,
-):
+
+def split_documents(documents):
+
     splitter = RecursiveCharacterTextSplitter(
-        chunk_size=chunk_size,
-        chunk_overlap=chunk_overlap,
-        separators=["\n\n", "\n", " ", ""],
+        chunk_size=CHUNK_SIZE,
+        chunk_overlap=CHUNK_OVERLAP
     )
 
     chunks = splitter.split_documents(documents)
 
-    print(f"Created {len(chunks)} chunks.")
+    print("=" * 50)
+    print("Chunking Summary")
+    print("=" * 50)
+    print(f"Input documents : {len(documents)}")
+    print(f"Output chunks    : {len(chunks)}")
+    print(f"Chunk size       : {CHUNK_SIZE}")
+    print(f"Chunk overlap    : {CHUNK_OVERLAP}")
 
     return chunks
-
-# TODO:
-# - text normalization / cleaning (whitespace, headers, footers)
-# - improve chunking strategy (semantic / structure-aware)

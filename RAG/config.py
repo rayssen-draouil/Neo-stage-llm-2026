@@ -18,3 +18,9 @@ SUPPORTED_EXTENSIONS = {
     ".docx",
     ".md"
 }
+# ==========================
+# Chunking Configuration
+# ==========================
+
+CHUNK_SIZE = 500
+CHUNK_OVERLAP = 100
