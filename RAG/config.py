@@ -24,3 +24,12 @@ SUPPORTED_EXTENSIONS = {
 
 CHUNK_SIZE = 500
 CHUNK_OVERLAP = 100
+# ==========================
+# Embeddings Configuration
+# ==========================
+EMBEDDING_MODEL_NAME = "BAAI/bge-small-en-v1.5"
+
+# ==========================
+# Vector Store Configuration
+# ==========================
+CHROMA_PERSIST_DIR = BASE_DIR / "storage" / "chroma_db"
