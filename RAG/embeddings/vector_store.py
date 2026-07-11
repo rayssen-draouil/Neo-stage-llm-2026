@@ -1,119 +1,54 @@
 """
-vector_store.py
-----------------
-
-Création et gestion de la base vectorielle Chroma.
-
-Responsabilités :
-- créer la base vectorielle
-- indexer les chunks
-- recharger une base existante
-- ajouter de nouveaux documents
-
+Gestion du vector store ChromaDB avec embeddings Ollama.
 """
 
-import logging
-from typing import List
-
+from langchain_ollama import OllamaEmbeddings
 from langchain_chroma import Chroma
-from langchain_core.documents import Document
-
-from RAG.config import CHROMA_PERSIST_DIR
-from RAG.embeddings.embedder import get_embedding_function
-
-logger = logging.getLogger(__name__)
-
-COLLECTION_NAME = "neoledge_docs"
+from RAG.config import CHROMA_PERSIST_DIR, OLLAMA_BASE_URL, EMBEDDING_MODEL_NAME
 
 
-def build_vector_store(chunks: List[Document]) -> Chroma:
+def get_embeddings():
+    """Retourne le modèle d'embeddings Ollama."""
+    return OllamaEmbeddings(
+        base_url=OLLAMA_BASE_URL,
+        model=EMBEDDING_MODEL_NAME,
+    )
+
+
+def load_vector_store(collection_name: str = "neoledge_docs"):
     """
-    Génère les embeddings puis indexe tous les chunks dans ChromaDB.
+    Charge le vector store ChromaDB existant depuis le dossier de persistance.
+    Le vector store doit avoir été créé au préalable via ingest.
     """
+    embeddings = get_embeddings()
 
-    if not chunks:
-        raise ValueError("Aucun chunk à indexer.")
+    vectorstore = Chroma(
+        collection_name=collection_name,
+        persist_directory=str(CHROMA_PERSIST_DIR),
+        embedding_function=embeddings,
+    )
 
-    try:
+    count = vectorstore._collection.count()
+    print(f"Vector store chargé : {count} chunks dans ChromaDB")
 
-        embedding_function = get_embedding_function()
-
-        CHROMA_PERSIST_DIR.mkdir(
-            parents=True,
-            exist_ok=True
-        )
-
-        vectorstore = Chroma.from_documents(
-            documents=chunks,
-            embedding=embedding_function,
-            persist_directory=str(CHROMA_PERSIST_DIR),
-            collection_name=COLLECTION_NAME,
-        )
-
-        logger.info(f"{len(chunks)} chunks indexés.")
-
-        return vectorstore
-
-    except Exception as e:
-
-        logger.exception(e)
-
-        raise RuntimeError(
-            f"Erreur pendant la création de ChromaDB : {e}"
-        )
+    return vectorstore
 
 
-def load_vector_store() -> Chroma:
+def build_vector_store(documents):
     """
-    Recharge une base vectorielle existante.
+    Crée et persiste un vector store ChromaDB à partir d'une liste de documents LangChain.
+    À utiliser lors de l'ingestion initiale.
     """
+    embeddings = get_embeddings()
 
-    try:
+    CHROMA_PERSIST_DIR.mkdir(parents=True, exist_ok=True)
 
-        embedding_function = get_embedding_function()
+    vectorstore = Chroma.from_documents(
+        documents=documents,
+        embedding=embeddings,
+        persist_directory=str(CHROMA_PERSIST_DIR),
+    )
 
-        vectorstore = Chroma(
-            persist_directory=str(CHROMA_PERSIST_DIR),
-            embedding_function=embedding_function,
-            collection_name=COLLECTION_NAME,
-        )
+    print(f"Vector store créé : {vectorstore._collection.count()} chunks indexés")
 
-        logger.info("Base vectorielle chargée.")
-
-        return vectorstore
-
-    except Exception as e:
-
-        logger.exception(e)
-
-        raise RuntimeError(
-            f"Impossible de charger ChromaDB : {e}"
-        )
-
-
-def add_documents(
-    vectorstore: Chroma,
-    chunks: List[Document],
-):
-    """
-    Ajoute de nouveaux chunks.
-    """
-
-    if not chunks:
-        return
-
-    try:
-
-        vectorstore.add_documents(chunks)
-
-        logger.info(
-            f"{len(chunks)} nouveaux chunks ajoutés."
-        )
-
-    except Exception as e:
-
-        logger.exception(e)
-
-        raise RuntimeError(
-            f"Erreur lors de l'ajout : {e}"
-        )
+    return vectorstore
