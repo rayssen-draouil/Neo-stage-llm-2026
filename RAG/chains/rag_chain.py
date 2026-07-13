@@ -15,22 +15,40 @@ from langchain_ollama import ChatOllama
 
 logger = logging.getLogger(__name__)
 
-PROMPT_TEMPLATE = """Tu es un assistant qui répond aux questions en te basant uniquement sur le contexte fourni ci-dessous.
-Si la réponse ne se trouve pas dans le contexte, dis-le clairement plutôt que d'inventer une réponse.
+PROMPT_TEMPLATE = """
+Tu es un assistant documentaire NeoLedge.
+
+Tu dois répondre UNIQUEMENT à partir du contexte fourni.
+
+Même si tu connais la réponse grâce à tes connaissances générales,
+tu dois l'ignorer.
+
+Si la réponse n'est pas présente explicitement dans le contexte,
+réponds EXACTEMENT :
+
+"Je ne trouve pas cette information dans les documents."
 
 Contexte :
+
 {context}
 
 Question :
+
 {question}
 
-Réponse :"""
+Réponse :
+"""
 
 
-def format_docs(docs) -> str:
-    """Concatène le contenu des documents récupérés en un seul bloc de contexte."""
-    return "\n\n---\n\n".join(doc.page_content for doc in docs)
+def format_docs(docs):
 
+    context = "\n\n".join(doc.page_content for doc in docs)
+
+    print("\n================ CONTEXT =================")
+    print(context)
+    print("==========================================\n")
+
+    return context
 
 def build_rag_chain(
     retriever: VectorStoreRetriever,
