@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 LLM_MODEL_NAME = "qwen2.5:3b"
 
 
-def get_llm(temperature: float = 0.1) -> ChatOllama:
+def get_llm(temperature: float = 0) -> ChatOllama:
     """
     Retourne le client LLM Qwen pointant vers le serveur Ollama (conteneur Docker).
     """
@@ -27,5 +27,27 @@ def get_llm(temperature: float = 0.1) -> ChatOllama:
     )
 
     logger.info(f"LLM chargé : {LLM_MODEL_NAME}")
+    
 
     return llm
+
+def format_docs(docs):
+
+    context = ""
+
+    for doc in docs:
+
+        source = doc.metadata.get("source", "Unknown")
+
+        page = doc.metadata.get("page", "")
+
+        context += (
+            f"\nSOURCE: {source} "
+            f"(page {page})\n"
+        )
+
+        context += doc.page_content
+
+        context += "\n\n---\n\n"
+
+    return context

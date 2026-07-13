@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 def build_retriever(
     vectorstore: Chroma,
     k: int = 4,
-    search_type: str = "similarity",
+    search_type: str = "mmr",
 ) -> VectorStoreRetriever:
     """
     Construit un retriever LangChain à partir de la base vectorielle.
