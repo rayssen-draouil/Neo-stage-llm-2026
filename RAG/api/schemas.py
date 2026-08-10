@@ -48,6 +48,8 @@ class ChatCompletionResponse(BaseModel):
     object: str = "chat.completion"
     created: int = Field(default_factory=lambda: int(time.time()))
     model: str
+    answer: str = ""
+    sources: List[str] = Field(default_factory=list)
     choices: List[ChatCompletionChoice]
     usage: ChatCompletionUsage = ChatCompletionUsage()
 

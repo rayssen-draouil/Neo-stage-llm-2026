@@ -12,9 +12,12 @@ Documentation Swagger auto-générée : http://localhost:8000/docs
 """
 
 import logging
+from pathlib import Path
 
 from fastapi import Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import Response
+from prometheus_client import CONTENT_TYPE_LATEST, generate_latest
 
 from RAG.api.auth import verify_token
 from RAG.api.config import get_settings
@@ -35,6 +38,35 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 settings = get_settings()
+
+
+def format_source_reference(source: str) -> str:
+    """Réduit un chemin de source à un affichage relatif à Documents si possible."""
+
+    normalized_source = source.replace("\\", "/")
+    source_path = Path(normalized_source)
+
+    if "Documents" not in source_path.parts:
+        return source_path.name
+
+    documents_index = source_path.parts.index("Documents")
+    relative_parts = source_path.parts[documents_index + 1 :]
+
+    if not relative_parts:
+        return source_path.name
+
+    return "/".join(relative_parts)
+
+
+def format_answer_with_sources(answer: str, sources: list[str]) -> str:
+    """Ajoute un bloc de sources au texte de réponse quand des sources existent."""
+
+    if not sources:
+        return answer
+
+    formatted_sources = [format_source_reference(source) for source in sources]
+    sources_block = "\n".join(f"- {source}" for source in formatted_sources)
+    return f"{answer}\n\n---\nSources :\n{sources_block}"
 
 app = FastAPI(
     title=settings.api_title,
@@ -61,6 +93,12 @@ app.add_middleware(
 def health_check():
     """Vérifie que l'API est disponible (aucune authentification requise)."""
     return {"status": "ok"}
+
+
+@app.get("/metrics", tags=["Monitoring"])
+def metrics():
+    """Expose les métriques Prometheus au format texte attendu par Prometheus."""
+    return Response(content=generate_latest(), media_type=CONTENT_TYPE_LATEST)
 
 
 @app.get(
@@ -105,7 +143,7 @@ def chat_completions(
     question = user_messages[-1].content
 
     try:
-        answer = run_rag_chain(question)
+        answer, sources = run_rag_chain(question)
     except Exception as exc:
         logger.exception("Erreur lors de l'exécution de la chaîne RAG")
         raise HTTPException(
@@ -113,12 +151,16 @@ def chat_completions(
             detail=f"Erreur interne lors de la génération de la réponse : {exc}",
         ) from exc
 
+    content = format_answer_with_sources(answer, sources)
+
     return ChatCompletionResponse(
         model=request.model,
+        answer=answer,
+        sources=sources,
         choices=[
             ChatCompletionChoice(
                 index=0,
-                message=ChatMessage(role="assistant", content=answer),
+                message=ChatMessage(role="assistant", content=content),
             )
         ],
     )
