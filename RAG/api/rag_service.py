@@ -59,9 +59,10 @@ def get_chain():
     return build_rag_chain(retriever, llm)
 
 
-def run_rag_chain(question: str) -> str:
+def run_rag_chain(question: str) -> tuple[str, List[str]]:
     chain = get_chain()
-    return chain.invoke(question)
+    result = chain.invoke(question)
+    return result["answer"], result["sources"]
 
 
 def embed_texts(texts: List[str]) -> List[List[float]]:

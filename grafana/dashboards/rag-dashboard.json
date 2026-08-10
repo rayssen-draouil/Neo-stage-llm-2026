@@ -1,0 +1,90 @@
+{
+  "uid": "rag-dashboard",
+  "title": "RAG Monitoring",
+  "tags": ["rag", "prometheus", "fastapi"],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "10s",
+  "time": {
+    "from": "now-15m",
+    "to": "now"
+  },
+  "panels": [
+    {
+      "type": "stat",
+      "title": "Nombre total de requêtes",
+      "gridPos": {"h": 8, "w": 8, "x": 0, "y": 0},
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(rag_requests_total)"
+        }
+      ],
+      "options": {"colorMode": "value", "graphMode": "none", "justifyMode": "auto"}
+    },
+    {
+      "type": "stat",
+      "title": "Nombre d'erreurs",
+      "gridPos": {"h": 8, "w": 8, "x": 8, "y": 0},
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(rag_errors_total)"
+        }
+      ],
+      "options": {"colorMode": "value", "graphMode": "none", "justifyMode": "auto"}
+    },
+    {
+      "type": "stat",
+      "title": "Documents récupérés",
+      "gridPos": {"h": 8, "w": 8, "x": 16, "y": 0},
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "rag_retrieved_documents"
+        }
+      ],
+      "options": {"colorMode": "value", "graphMode": "none", "justifyMode": "auto"}
+    },
+    {
+      "type": "stat",
+      "title": "Temps moyen de retrieval",
+      "gridPos": {"h": 8, "w": 8, "x": 0, "y": 8},
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(rate(rag_retrieval_duration_seconds_sum[5m])) / sum(rate(rag_retrieval_duration_seconds_count[5m]))"
+        }
+      ],
+      "fieldConfig": {"defaults": {"unit": "s"}},
+      "options": {"colorMode": "value", "graphMode": "none", "justifyMode": "auto"}
+    },
+    {
+      "type": "stat",
+      "title": "Temps moyen de génération LLM",
+      "gridPos": {"h": 8, "w": 8, "x": 8, "y": 8},
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(rate(rag_llm_duration_seconds_sum[5m])) / sum(rate(rag_llm_duration_seconds_count[5m]))"
+        }
+      ],
+      "fieldConfig": {"defaults": {"unit": "s"}},
+      "options": {"colorMode": "value", "graphMode": "none", "justifyMode": "auto"}
+    },
+    {
+      "type": "stat",
+      "title": "Temps moyen total du pipeline",
+      "gridPos": {"h": 8, "w": 8, "x": 16, "y": 8},
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(rate(rag_total_duration_seconds_sum[5m])) / sum(rate(rag_total_duration_seconds_count[5m]))"
+        }
+      ],
+      "fieldConfig": {"defaults": {"unit": "s"}},
+      "options": {"colorMode": "value", "graphMode": "none", "justifyMode": "auto"}
+    }
+  ]
+}

@@ -1,190 +1,90 @@
-# 🚀 Infrastructure IA Souveraine – NeoLedge
+# Neo-stage-llm-2026
+# Infrastructure IA Souveraine – NeoLedge
 
-[![Python](https://img.shields.io/badge/Python-3.13-blue.svg)]()
-[![Docker](https://img.shields.io/badge/Docker-Enabled-2496ED.svg)]()
-[![FastAPI](https://img.shields.io/badge/FastAPI-0.115+-009688.svg)]()
-[![LangChain](https://img.shields.io/badge/LangChain-RAG-green.svg)]()
-[![OpenWebUI](https://img.shields.io/badge/OpenWebUI-Integrated-orange.svg)]()
-[![License](https://img.shields.io/badge/License-Internal-red.svg)]()
+## Description
 
----
+Ce projet met en place une infrastructure IA locale basée sur un modèle LLM Open Source et un pipeline RAG (Retrieval-Augmented Generation).
 
-# 📖 Description
+L'objectif est de permettre à un assistant conversationnel de répondre à des questions en utilisant la documentation interne de NeoLedge.
 
-Ce projet a pour objectif de mettre en place une **infrastructure IA souveraine entièrement locale** basée sur des modèles Open Source.
+Le projet repose entièrement sur des composants Open Source exécutés localement :
 
-La solution permet d'interroger la documentation interne de NeoLedge grâce à un pipeline **RAG (Retrieval-Augmented Generation)** afin de fournir des réponses contextualisées tout en garantissant :
-
-- 🔒 Confidentialité des données
-- 🏠 Exécution 100% locale
-- ☁️ Aucune dépendance à un fournisseur cloud
-- 🔁 Déploiement reproductible via Docker
-- 🔌 Compatibilité avec l'API OpenAI
-- 🤖 Intégration native avec Open WebUI
+- Ollama
+- Qwen
+- nomic-embed-text
+- ChromaDB
+- Open WebUI
+- LangChain
+- Docker
 
 ---
 
-# ✨ Fonctionnalités
+# Architecture
 
-## 📄 Ingestion documentaire
-
-Support automatique de :
-
-- PDF
-- Word (.docx)
-- Markdown (.md)
+```
+                +----------------------+
+                |   Documents          |
+                | PDF / Word / MD      |
+                +----------+-----------+
+                           |
+                           v
+                 LangChain Document Loaders
+                           |
+                           v
+                    Document Objects
+                           |
+                           v
+         RecursiveCharacterTextSplitter
+                           |
+                           v
+                         Chunks
+                           |
+                           v
+          Ollama (nomic-embed-text)
+                           |
+                           v
+                      Embeddings
+                           |
+                           v
+                       ChromaDB
+                           |
+                           v
+                    Semantic Retrieval
+                           |
+                           v
+                 Ollama (Qwen 2.5)
+                           |
+                           v
+                     Open WebUI
+```
 
 ---
 
-## 🧠 Pipeline RAG complet
+# Technologies
 
-- Extraction documentaire
-- Découpage en chunks
-- Génération d'embeddings
-- Indexation vectorielle
-- Recherche sémantique
-- Génération augmentée par récupération documentaire
-
----
-
-## 🤖 IA locale
-
+- Python 3.13
+- Docker
+- Docker Compose
 - Ollama
 - Qwen 2.5
 - nomic-embed-text
+- LangChain
 - ChromaDB
 - Open WebUI
 
 ---
 
-## 🌐 API REST compatible OpenAI
+# Prérequis
 
-Endpoints disponibles :
+Installer :
 
-- `/v1/chat/completions`
-- `/v1/embeddings`
-- `/v1/models`
-
----
-
-# 🏗 Architecture Globale
-
-```text
-                         ┌──────────────────────┐
-                         │ Internal Documents   │
-                         │ PDF / Word / MD      │
-                         └──────────┬───────────┘
-                                    │
-                                    ▼
-                    LangChain Document Loaders
-                                    │
-                                    ▼
-                           Document Objects
-                                    │
-                                    ▼
-                RecursiveCharacterTextSplitter
-                                    │
-                                    ▼
-                                  Chunks
-                                    │
-                                    ▼
-                     Ollama (nomic-embed-text)
-                                    │
-                                    ▼
-                                Embeddings
-                                    │
-                                    ▼
-                                ChromaDB
-                                    │
-                                    ▼
-                           Semantic Retrieval
-                                    │
-                                    ▼
-                            Prompt Construction
-                                    │
-                                    ▼
-                           Ollama (Qwen 2.5)
-                                    │
-                                    ▼
-                                FastAPI
-                                    │
-                                    ▼
-                               Open WebUI
-```
+- Docker Desktop
+- Python 3.13+
+- Git
 
 ---
 
-# 🛠 Technologies
-
-| Technologie | Utilisation |
-|-------------|-------------|
-| Python 3.13 | Backend |
-| Docker | Conteneurisation |
-| Docker Compose | Orchestration |
-| LangChain | Framework RAG |
-| Ollama | Inférence locale |
-| Qwen2.5:3b | Modèle de génération |
-| nomic-embed-text | Modèle d'embeddings |
-| ChromaDB | Base vectorielle |
-| FastAPI | API REST |
-| Open WebUI | Interface conversationnelle |
-| Nginx | Reverse Proxy |
-
----
-
-# 📂 Structure du Projet
-
-```text
-infra-ia-souveraine/
-
-├── Documents/
-│   ├── pdf/
-│   ├── word/
-│   └── markdown/
-│
-├── RAG/
-│
-│   ├── api/
-│   │   ├── auth.py
-│   │   ├── config.py
-│   │   ├── main.py
-│   │   ├── rag_service.py
-│   │   └── schemas.py
-│   │
-│   ├── chains/
-│   │   └── rag_chain.py
-│   │
-│   ├── chunking/
-│   │   └── text_chunker.py
-│   │
-│   ├── embeddings/
-│   │   ├── embedder.py
-│   │   └── vector_store.py
-│   │
-│   ├── generation/
-│   │   └── llm.py
-│   │
-│   ├── ingest/
-│   │   └── loader.py
-│   │
-│   ├── retrieval/
-│   │   └── retriever.py
-│   │
-│   └── config.py
-│
-├── Tests/
-│
-├── docker-compose.yml
-├── requirements.txt
-├── requirements-api.txt
-└── README.md
-```
-
----
-
-# ⚙️ Installation
-
-## 1️⃣ Cloner le projet
+# Cloner le projet
 
 ```bash
 git clone <repository-url>
@@ -194,38 +94,35 @@ cd infra-ia-souveraine
 
 ---
 
-## 2️⃣ Créer un environnement virtuel
+# Créer l'environnement Python
+
+Windows
 
 ```bash
 python -m venv .venv
 ```
 
-### Windows
+Activer
 
 ```bash
 .venv\Scripts\activate
 ```
 
-### Linux
-
-```bash
-source .venv/bin/activate
-```
-
 ---
 
-## 3️⃣ Installer les dépendances
+# Installer les dépendances
 
 ```bash
 pip install -r requirements.txt
-pip install -r requirements-api.txt
 ```
 
 ---
 
-# 🐳 Déploiement Docker
+# Démarrer Docker
 
-Lancer l'infrastructure :
+Lancer Docker Desktop.
+
+Puis :
 
 ```bash
 docker compose up -d
@@ -237,49 +134,85 @@ Vérifier :
 docker ps
 ```
 
-Services attendus :
+Les services suivants doivent être démarrés :
 
 - ollama
-- chromadb
 - open-webui
+- chromadb
 - nginx
 
 ---
 
-# 🤖 Téléchargement des modèles
+# Télécharger les modèles Ollama
 
-## Modèle LLM
+Qwen
 
 ```bash
-docker exec -it ollama ollama pull qwen2.5:3b
+docker exec -it ollama ollama pull qwen2.5-coder:1.5b
 ```
 
-## Modèle Embedding
+Embeddings
 
 ```bash
 docker exec -it ollama ollama pull nomic-embed-text
 ```
 
-Vérification :
+Vérifier
 
 ```bash
 docker exec -it ollama ollama list
 ```
 
-Résultat attendu :
+---
 
-```text
-NAME                  SIZE
+# Accéder à Open WebUI
 
-qwen2.5:3b            ~2GB
-nomic-embed-text      ~274MB
+```
+http://localhost
 ```
 
 ---
 
-# 🔥 Construction de la Base Vectorielle
+# Structure du projet
 
-## 1. Chargement documentaire
+```
+infra-ia-souveraine/
+
+│
+├── Documents/
+│      ├── pdf/
+│      ├── word/
+│      └── markdown/
+│
+├── RAG/
+│      ├── ingest/
+│      ├── chunking/
+│      ├── embeddings/
+│      ├── retrieval/
+│      └── config.py
+│
+├── Tests/
+│
+├── docker-compose.yml
+│
+└── requirements.txt
+```
+
+---
+
+# Pipeline RAG
+
+Le pipeline est composé des étapes suivantes.
+
+## 1. Ingestion
+
+Charge automatiquement :
+
+- PDF
+- Word
+- Markdown
+
+Commande :
 
 ```bash
 python -m Tests.test_loader
@@ -289,14 +222,17 @@ python -m Tests.test_loader
 
 ## 2. Chunking
 
+Découpe les documents en chunks.
+
 Configuration :
 
-```python
-CHUNK_SIZE = 500
-CHUNK_OVERLAP = 100
+```
+Chunk Size = 500
+
+Chunk Overlap = 100
 ```
 
-Exécution :
+Commande :
 
 ```bash
 python -m Tests.test_chunker
@@ -304,260 +240,152 @@ python -m Tests.test_chunker
 
 ---
 
-## 3. Génération des embeddings
+## 3. Embeddings
+
+Transformation des chunks en vecteurs avec :
+
+```
+nomic-embed-text
+```
+
+Stockage dans :
+
+```
+ChromaDB
+```
+
+Commande :
 
 ```bash
 python -m Tests.test_embeddings_pipeline
 ```
 
-Résultat attendu :
+---
 
-```text
-Documents chargés : 12
+# Résultat attendu
 
-Chunks générés : 118
+```
+PDF chargés : 1
+
+Word chargés : 1
+
+Markdown chargés : 1
+
+Documents : 12
+
+Chunks : 118
 
 Embedding model chargé : nomic-embed-text
 
 118 chunks indexés.
-```
 
----
-
-# 🔎 Test du Pipeline RAG
-
-```bash
-python -m Tests.test_rag_chain
-```
-
-Exemple :
-
-```text
 Question :
 
-Quelle est la durée du stage ?
+Quel est l'objectif du stage ?
 
-Réponse :
+Résultat :
 
-Le stage se déroule du 15 juin 2026 au 14 août 2026,
-soit une durée de 9 semaines.
+Top 3 chunks trouvés.
 ```
 
 ---
 
-# 🌐 API REST
+# Configuration
 
-Lancer :
+Les paramètres principaux sont définis dans :
 
-```bash
-uvicorn RAG.api.main:app --reload --port 8001
 ```
-
-Swagger :
-
-```text
-http://localhost:8001/docs
-```
-
-Health Check :
-
-```text
-http://localhost:8001/health
-```
-
----
-
-# 🔐 Authentification
-
-Créer un fichier :
-
-```text
-.env
-```
-
-Contenu :
-
-```env
-API_TOKEN=rayssen123
-```
-
----
-
-# 🔌 Endpoints Compatibles OpenAI
-
----
-
-## Chat Completions
-
-```http
-POST /v1/chat/completions
+RAG/config.py
 ```
 
 Exemple :
 
-```json
-{
-  "model": "neoledge-rag",
-  "messages": [
-    {
-      "role": "user",
-      "content": "Quelle est la durée du stage ?"
-    }
-  ]
-}
+```python
+CHUNK_SIZE = 500
+
+CHUNK_OVERLAP = 100
+
+EMBEDDING_MODEL_NAME = "nomic-embed-text"
+
+OLLAMA_BASE_URL = "http://localhost:11434"
 ```
 
 ---
 
-## Embeddings
-
-```http
-POST /v1/embeddings
-```
-
----
-
-## Models
-
-```http
-GET /v1/models
-```
-
----
-
-# 🖥 Intégration Open WebUI
-
-## URL
-
-```text
-http://host.docker.internal:8001/v1
-```
-
-## Authentification
-
-```text
-Bearer Token
-```
-
-## API Key
-
-```text
-rayssen123
-```
-
-## Modèle
-
-```text
-neoledge-rag
-```
-
----
-
-# 🧪 Tests Disponibles
-
-## Chargement documentaire
-
-```bash
-python -m Tests.test_loader
-```
-
----
-
-## Chunking
-
-```bash
-python -m Tests.test_chunker
-```
-
----
-
-## Embeddings
-
-```bash
-python -m Tests.test_embeddings_pipeline
-```
-
----
-
-## Chaîne RAG
-
-```bash
-python -m Tests.test_rag_chain
-```
-
----
-
-## API
-
-```bash
-pytest Tests/test_api.py
-```
-
-Tests d'intégration :
-
-```bash
-pytest Tests/test_api.py -m integration
-```
-
----
-
-# 🔌 Ports Utilisés
+# Ports utilisés
 
 | Service | Port |
 |----------|------|
 | Open WebUI | 80 |
 | Ollama | 11434 |
 | ChromaDB | 8000 |
-| FastAPI | 8001 |
 
 ---
 
-# 📊 État du Projet
+# Vérification des services
 
-| Module | Status |
-|---------|---------|
-| Infrastructure Docker | ✅ |
-| Ollama | ✅ |
-| Open WebUI | ✅ |
-| Nginx | ✅ |
-| Ingestion documentaire | ✅ |
-| Chunking | ✅ |
-| Embeddings | ✅ |
-| ChromaDB | ✅ |
-| Retrieval sémantique | ✅ |
-| Chaîne RAG | ✅ |
-| API FastAPI | ✅ |
-| Authentification | ✅ |
-| Swagger | ✅ |
-| Compatibilité OpenAI | ✅ |
-| Intégration OpenWebUI | ✅ |
+Ollama
 
----
+```bash
+docker ps
+```
 
-# 🎯 Exemple de Pipeline
+Tester l'API
 
-```text
-Question utilisateur
-        ↓
-Embedding de la question
-        ↓
-Recherche dans ChromaDB
-        ↓
-Récupération des chunks pertinents
-        ↓
-Construction du prompt
-        ↓
-Qwen 2.5
-        ↓
-Réponse contextualisée
+```bash
+curl http://localhost:11434/api/tags
+```
+
+ChromaDB
+
+```bash
+curl http://localhost:8000/api/v2/heartbeat
 ```
 
 ---
 
-# 👨‍💻 Auteur
+# Tests
 
-**Rayssen Draouil**
+Test du chargement
+
+```bash
+python -m Tests.test_loader
+```
+
+Test du chunking
+
+```bash
+python -m Tests.test_chunker
+```
+
+Test du pipeline complet
+
+```bash
+python -m Tests.test_embeddings_pipeline
+```
+
+---
+
+# État actuel
+
+- ✔ Infrastructure Docker
+- ✔ Ollama
+- ✔ Open WebUI
+- ✔ ChromaDB
+- ✔ Ingestion des documents
+- ✔ Chunking
+- ✔ Génération des embeddings
+- ✔ Indexation dans ChromaDB
+- ⏳ Retrieval
+- ⏳ API FastAPI
+- ⏳ Intégration Open WebUI
+
+---
+
+# Auteur
+
+Rayssen Draouil
 
 Stage Été 2026
 
-**NeoLedge – Infrastructure IA Souveraine**
+NeoLedge – Infrastructure IA Souveraine
